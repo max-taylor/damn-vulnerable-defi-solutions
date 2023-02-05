@@ -13,7 +13,7 @@
     "the-rewarder": "yarn hardhat test test/the-rewarder/the-rewarder.challenge.js",
     "selfie": "yarn hardhat test test/selfie/selfie.challenge.js",
     "compromised": "yarn hardhat test test/compromised/compromised.challenge.js",
-    "puppet": "yarn hardhat test test/puppet/puppet.challenge.js",
+    "puppet": "yarn hardhat test test/puppet/puppet.challenge.ts",
     "puppet-v2": "yarn hardhat test test/puppet-v2/puppet-v2.challenge.js",
     "free-rider": "yarn hardhat test test/free-rider/free-rider.challenge.js",
     "backdoor": "yarn hardhat test test/backdoor/backdoor.challenge.js",
@@ -43,6 +43,7 @@
     "solmate": "6.6.1"
   },
   "dependencies": {
+    "@types/mocha": "^10.0.1",
     "lodash": "^4.17.21"
   }
 }
